@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     div.innerHTML = `
       <h2>
         URL Pattern: 
-        <input type="text" class="url-input" value="${group.url}" data-group="${groupIndex}">
+        <input type="text" class="url-input" data-group="${groupIndex}">
         <button class="btn btn-delete delete-group-btn" data-group="${groupIndex}" style="margin-left:10px;">Delete Group</button>
       </h2>
       <table>
@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </table>
       <button class="btn btn-add add-mapping-btn" data-group="${groupIndex}">+ Add Mapping</button>
     `;
+
+    // Set value safely
+    div.querySelector('.url-input').value = group.url || '';
 
     const tbody = div.querySelector('.mappings-body');
     group.mappings.forEach((mapping, mappingIndex) => {
@@ -77,15 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
   function createMappingRow(mapping, groupIndex, mappingIndex) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><input type="text" class="m-selector" value="${mapping.selector}"></td>
-      <td><input type="text" class="m-key key-input" value="${mapping.key}"></td>
-      <td><input type="checkbox" class="m-alt" ${mapping.alt ? 'checked' : ''}></td>
-      <td><input type="checkbox" class="m-shift" ${mapping.shift ? 'checked' : ''}></td>
-      <td><input type="checkbox" class="m-ctrl" ${mapping.ctrl ? 'checked' : ''}></td>
-      <td><input type="checkbox" class="m-meta" ${mapping.meta ? 'checked' : ''}></td>
-      <td><input type="text" class="m-label" value="${mapping.label || ''}"></td>
+      <td><input type="text" class="m-selector"></td>
+      <td><input type="text" class="m-key key-input"></td>
+      <td><input type="checkbox" class="m-alt"></td>
+      <td><input type="checkbox" class="m-shift"></td>
+      <td><input type="checkbox" class="m-ctrl"></td>
+      <td><input type="checkbox" class="m-meta"></td>
+      <td><input type="text" class="m-label"></td>
       <td><button class="btn btn-delete delete-mapping-btn">Del</button></td>
     `;
+
+    // Set values safely to avoid quote issues
+    tr.querySelector('.m-selector').value = mapping.selector || '';
+    tr.querySelector('.m-key').value = mapping.key || '';
+    tr.querySelector('.m-alt').checked = !!mapping.alt;
+    tr.querySelector('.m-shift').checked = !!mapping.shift;
+    tr.querySelector('.m-ctrl').checked = !!mapping.ctrl;
+    tr.querySelector('.m-meta').checked = !!mapping.meta;
+    tr.querySelector('.m-label').value = mapping.label || '';
 
     tr.querySelector('.delete-mapping-btn').addEventListener('click', () => {
       currentConfig[groupIndex].mappings.splice(mappingIndex, 1);
