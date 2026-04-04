@@ -1,0 +1,15 @@
+.chc-hint {
+  position: absolute;
+  background-color: rgba(255, 255, 0, 0.9);
+  color: black;
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 100000;
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
+  line-height: 1;
+}
