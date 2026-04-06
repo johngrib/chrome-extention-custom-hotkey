@@ -31,17 +31,24 @@
     // Remove existing hints to avoid duplicates
     document.querySelectorAll('.chc-hint').forEach(hint => hint.remove());
 
+    if (activeMappings.length === 0) return;
+
     activeMappings.forEach(mapping => {
       const elements = document.querySelectorAll(mapping.selector);
-      elements.forEach(element => {
-        if (!isVisible(element)) return;
+      
+      // Find the first matching visible element for this mapping
+      const targetElement = Array.from(elements).find(element => {
+        if (!isVisible(element)) return false;
 
-        // Filter by text content if specified
-        if (mapping.text && !element.textContent.includes(mapping.text)) {
-          return;
+        // Filter by text content if specified (using innerText for visible text only)
+        if (mapping.text && !element.innerText.includes(mapping.text)) {
+          return false;
         }
+        return true;
+      });
 
-        const rect = element.getBoundingClientRect();
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
         const hint = document.createElement('div');
         hint.className = 'chc-hint';
         hint.textContent = mapping.label || mapping.key.toUpperCase();
@@ -51,18 +58,17 @@
         hint.style.left = (window.scrollX + rect.left) + 'px';
         
         document.body.appendChild(hint);
-      });
+      }
     });
   }
 
   function isVisible(el) {
     const rect = el.getBoundingClientRect();
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      window.getComputedStyle(el).display !== 'none' &&
-      window.getComputedStyle(el).visibility !== 'hidden'
-    );
+    // Ensure the element has a physical size and is not hidden by CSS
+    if (rect.width <= 0 || rect.height <= 0) return false;
+    
+    const style = window.getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
   }
 
   // Handle hotkey input
