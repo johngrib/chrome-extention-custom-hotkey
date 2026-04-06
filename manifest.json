@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Custom Hotkey Clicker",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Allows custom hotkeys for clicking elements on specific web pages.",
   "permissions": [
     "storage",

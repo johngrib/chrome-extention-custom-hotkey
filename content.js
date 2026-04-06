@@ -36,6 +36,11 @@
       elements.forEach(element => {
         if (!isVisible(element)) return;
 
+        // Filter by text content if specified
+        if (mapping.text && !element.textContent.includes(mapping.text)) {
+          return;
+        }
+
         const rect = element.getBoundingClientRect();
         const hint = document.createElement('div');
         hint.className = 'chc-hint';
@@ -83,12 +88,18 @@
       const metaMatches = !!mapping.meta === event.metaKey;
 
       if (keyMatches && altMatches && ctrlMatches && shiftMatches && metaMatches) {
-        const element = document.querySelector(mapping.selector);
-        if (element && isVisible(element)) {
+        const elements = document.querySelectorAll(mapping.selector);
+        // Find the first element that matches text filter and is visible
+        const targetElement = Array.from(elements).find(el => {
+          const textMatches = !mapping.text || el.textContent.includes(mapping.text);
+          return textMatches && isVisible(el);
+        });
+
+        if (targetElement) {
           event.preventDefault();
           event.stopPropagation();
-          element.click();
-          console.log('Custom Hotkey Clicker: Clicked', mapping.selector);
+          targetElement.click();
+          console.log('Custom Hotkey Clicker: Clicked', mapping.selector, mapping.text ? `with text "${mapping.text}"` : '');
         }
       }
     });

@@ -5,6 +5,7 @@
 ## 핵심 기능 (Core Features)
 - **사용자 친화적 설정 (Table UI)**: 복잡한 JSON 대신 테이블 형식의 UI를 통해 URL 패턴과 단축키 매핑을 직관적으로 관리합니다.
 - **물리적 키 코드 지원 (Physical Key Support)**: Mac의 `Option` 키 조합 시 발생하는 특수문자 문제를 해결하기 위해 `event.code`(물리적 위치)를 인식하여 정확한 단축키 매칭을 보장합니다.
+- **텍스트 기반 필터링 (Text Filtering)**: CSS Selector로 찾은 요소들 중 특정 텍스트(예: "Details", "Submit")를 포함한 요소만 골라내어 클릭할 수 있습니다.
 - **시각적 힌트 (Visual Hints)**: 단축키가 할당된 요소 위에 노란색 배지로 단축키 정보를 표시하여 사용자가 즉시 인지할 수 있게 합니다.
 - **지능적 입력 보호**: 사용자가 `input`, `textarea`, `contenteditable` 요소에 포커스가 있는 상태에서는 단축키 동작을 중지하여 일반적인 타이핑을 방지합니다.
 - **동적 요소 감지**: 3초 주기로 페이지를 스캔하여 SPA(Single Page Application)나 동적으로 로드되는 버튼에도 자동으로 힌트를 부착합니다.
@@ -24,6 +25,7 @@
     "mappings": [
       {
         "selector": "css_selector",
+        "text": "optional_text_filter",
         "key": "character (e.g., 'c', 's')",
         "alt": boolean,
         "shift": boolean,
@@ -43,4 +45,5 @@
 4. **설정 백업/복원**: JSON 파일을 통한 설정 내보내기 및 가져오기 기능 강화.
 
 ## 변경 이력 (Changelog)
+- **v1.1.0**: 텍스트 필터(Text Filter) 기능 추가. Selector로 찾은 결과 중 특정 텍스트를 포함한 요소만 필터링하여 정확한 타겟팅 가능.
 - **v1.0.1**: Options 페이지에서 CSS Selector나 URL Pattern 입력 시 따옴표(`"`)가 포함되어 있으면 HTML 구조가 깨져 값이 잘리는 버그 수정 (`innerHTML` 대신 `.value` 프로퍼티 할당 방식 적용).
