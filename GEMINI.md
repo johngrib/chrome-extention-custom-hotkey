@@ -26,6 +26,7 @@
       {
         "selector": "css_selector",
         "text": "optional_text_filter",
+        "comment": "user_note",
         "key": "character (e.g., 'c', 's')",
         "alt": boolean,
         "shift": boolean,
@@ -45,6 +46,7 @@
 4. **설정 백업/복원**: JSON 파일을 통한 설정 내보내기 및 가져오기 기능 강화.
 
 ## 변경 이력 (Changelog)
+- **v1.2.0**: 각 단축키 매핑에 코멘트(Comment) 필드 추가. 각 설정의 용도를 자유롭게 기록 가능.
 - **v1.1.1**: 동일한 단축키 매핑에 대해 여러 요소가 발견될 경우, 첫 번째 요소에만 힌트를 표시하도록 개선 (화면 가림 방지). 텍스트 필터 시 `innerText`를 사용하여 사용자에게 보이는 텍스트만 인식하도록 정확도 향상.
 - **v1.1.0**: 텍스트 필터(Text Filter) 기능 추가. Selector로 찾은 결과 중 특정 텍스트를 포함한 요소만 필터링하여 정확한 타겟팅 가능.
 - **v1.0.1**: Options 페이지에서 CSS Selector나 URL Pattern 입력 시 따옴표(`"`)가 포함되어 있으면 HTML 구조가 깨져 값이 잘리는 버그 수정 (`innerHTML` 대신 `.value` 프로퍼티 할당 방식 적용).

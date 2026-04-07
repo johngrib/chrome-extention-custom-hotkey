@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <th>Selector</th>
             <th>Text Filter</th>
+            <th>Comment</th>
             <th>Key</th>
             <th>Alt</th>
             <th>Shift</th>
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     div.querySelector('.add-mapping-btn').addEventListener('click', () => {
-      group.mappings.push({ selector: '', text: '', key: '', alt: false, shift: false, ctrl: false, meta: false, label: '' });
+      group.mappings.push({ selector: '', text: '', comment: '', key: '', alt: false, shift: false, ctrl: false, meta: false, label: '' });
       renderUI();
     });
 
@@ -190,6 +191,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       statusDiv.textContent = '';
       statusDiv.className = '';
+    }, 3000);
+  }
+});
+{
+      statusDiv.textContent = '';
+      statusDiv.className = '';
+    }, 3000);
+  }
+});
+tusDiv.className = '';
     }, 3000);
   }
 });
