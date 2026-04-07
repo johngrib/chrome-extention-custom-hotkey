@@ -13,3 +13,97 @@
   font-family: sans-serif;
   line-height: 1;
 }
+
+/* Status Badge */
+.chc-status-badge {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-family: sans-serif;
+  cursor: pointer;
+  z-index: 100001;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: opacity 0.3s;
+}
+.chc-status-badge:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Dashboard Panel */
+.chc-dashboard {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 100002;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  color: #333;
+}
+.chc-dashboard-header {
+  padding: 12px;
+  background: #f4f4f4;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px 8px 0 0;
+}
+.chc-dashboard-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.chc-dashboard-close {
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+.chc-dashboard-body {
+  padding: 0;
+  overflow-y: auto;
+}
+.chc-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chc-item:last-child { border-bottom: none; }
+.chc-item.missing { background: #fff5f5; opacity: 0.7; }
+.chc-item.found { background: #f0fff4; }
+
+.chc-item-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.chc-item-status.found { background: #28a745; }
+.chc-item-status.missing { background: #dc3545; }
+
+.chc-item-info { flex-grow: 1; min-width: 0; }
+.chc-item-label { font-weight: bold; font-size: 14px; }
+.chc-item-details { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chc-item-key {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  font-weight: bold;
+}
