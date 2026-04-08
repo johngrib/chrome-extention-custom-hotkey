@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tr.innerHTML = `
       <td><input type="text" class="m-selector"></td>
       <td><input type="text" class="m-text"></td>
+      <td><input type="text" class="m-comment"></td>
       <td><input type="text" class="m-key key-input"></td>
       <td><input type="checkbox" class="m-alt"></td>
       <td><input type="checkbox" class="m-shift"></td>
@@ -96,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set values safely to avoid quote issues
     tr.querySelector('.m-selector').value = mapping.selector || '';
     tr.querySelector('.m-text').value = mapping.text || '';
+    tr.querySelector('.m-comment').value = mapping.comment || '';
     tr.querySelector('.m-key').value = mapping.key || '';
     tr.querySelector('.m-alt').checked = !!mapping.alt;
     tr.querySelector('.m-shift').checked = !!mapping.shift;
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mappings.push({
           selector: row.querySelector('.m-selector').value,
           text: row.querySelector('.m-text').value,
+          comment: row.querySelector('.m-comment').value,
           key: row.querySelector('.m-key').value,
           alt: row.querySelector('.m-alt').checked,
           shift: row.querySelector('.m-shift').checked,
