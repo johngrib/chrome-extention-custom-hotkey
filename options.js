@@ -194,13 +194,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
   }
 });
-{
-      statusDiv.textContent = '';
-      statusDiv.className = '';
-    }, 3000);
-  }
-});
-tusDiv.className = '';
-    }, 3000);
-  }
-});
