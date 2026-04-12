@@ -35,7 +35,14 @@
       
       badge.style.display = 'block';
       setTimeout(showHints, 1000);
-      setInterval(showHints, 3000); // Re-run periodically for dynamic elements
+
+      // Replace setInterval with MutationObserver for better performance and responsiveness
+      let timeout = null;
+      const observer = new MutationObserver(() => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(showHints, 500); // Debounce to avoid excessive updates
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
     }
   });
 
