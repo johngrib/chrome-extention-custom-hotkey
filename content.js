@@ -10,7 +10,7 @@
   document.body.appendChild(badge);
 
   const dashboard = document.createElement('div');
-  dashboard.className = 'chc-dashboard';
+  dashboard.className = 'chc-dashboard hidden';
   dashboard.style.display = 'none';
   document.body.appendChild(dashboard);
 
@@ -84,22 +84,46 @@
         foundCount++;
         mappingStatus.push({ mapping, found: true });
         
-        const rect = targetElement.getBoundingClientRect();
         const hint = document.createElement('div');
         hint.className = 'chc-hint';
         hint.textContent = mapping.label || mapping.key.toUpperCase();
         
-        // Position hint at the top-left of the target element
-        hint.style.top = (window.scrollY + rect.top - 5) + 'px';
-        hint.style.left = (window.scrollX + rect.left) + 'px';
-        
-        document.body.appendChild(hint);
+        // Insert hint near the target element to respect stacking context
+        const parent = targetElement.parentElement;
+        if (parent) {
+          const parentStyle = window.getComputedStyle(parent);
+          if (parentStyle.position === 'static') {
+            parent.style.position = 'relative';
+          }
+          parent.appendChild(hint);
+          hint.style.top = '-5px';
+          hint.style.left = '0px';
+        } else {
+          const rect = targetElement.getBoundingClientRect();
+          hint.style.top = (window.scrollY + rect.top - 5) + 'px';
+          hint.style.left = (window.scrollX + rect.left) + 'px';
+          document.body.appendChild(hint);
+        }
       } else {
         mappingStatus.push({ mapping, found: false });
       }
     });
 
-    badge.textContent = `${foundCount} / ${activeMappings.length}`;
+    const foundItems = mappingStatus.filter(s => s.found);
+    if (foundItems.length > 0) {
+      badge.innerHTML = foundItems.map(s => {
+        const keyStr = (s.mapping.alt ? '⌥' : '') + (s.mapping.shift ? '⇧' : '') + (s.mapping.ctrl ? '⌃' : '') + (s.mapping.meta ? '⌘' : '') + s.mapping.key.toUpperCase();
+        return `
+          <div class="chc-badge-item">
+            <span class="chc-badge-key">${keyStr}</span>
+            <span class="chc-badge-comment">${s.mapping.comment || s.mapping.label || ''}</span>
+          </div>
+        `;
+      }).join('');
+    } else {
+      badge.textContent = `${foundCount} / ${activeMappings.length}`;
+    }
+    
     if (dashboardOpen) {
       updateDashboard(mappingStatus);
     }
@@ -118,27 +142,52 @@
     return true;
   }
 
+  let badgeVisible = true;
+
+  function toggleBadge() {
+    badgeVisible = !badgeVisible;
+    badge.style.display = badgeVisible ? 'block' : 'none';
+  }
+
   function toggleDashboard() {
     dashboardOpen = !dashboardOpen;
-    dashboard.style.display = dashboardOpen ? 'flex' : 'none';
     if (dashboardOpen) {
-      showHints(); // Refresh
+      dashboard.classList.remove('hidden');
+      dashboard.style.display = 'flex';
+      showHints();
+    } else {
+      dashboard.classList.add('hidden');
+      // Delay display none to allow transition
+      setTimeout(() => {
+        if (!dashboardOpen) dashboard.style.display = 'none';
+      }, 300);
     }
   }
 
   function updateDashboard(mappingStatus) {
+    if (!dashboardOpen) return;
+
+    // Sort: Found items first
+    const sortedStatus = [...mappingStatus].sort((a, b) => {
+      if (a.found === b.found) return 0;
+      return a.found ? -1 : 1;
+    });
+
     dashboard.innerHTML = `
       <div class="chc-dashboard-header">
-        <h3>Custom Hotkey Dashboard</h3>
-        <span class="chc-dashboard-close">&times;</span>
+        <h3>Active Hotkeys</h3>
+        <div class="chc-dashboard-close">&times;</div>
       </div>
       <div class="chc-dashboard-body">
-        ${mappingStatus.map(s => `
+        ${sortedStatus.map(s => `
           <div class="chc-item ${s.found ? 'found' : 'missing'}">
             <div class="chc-item-status ${s.found ? 'found' : 'missing'}" title="${s.found ? 'Found' : 'Not found'}"></div>
             <div class="chc-item-info">
-              <div class="chc-item-label">${s.mapping.label || s.mapping.key.toUpperCase()} ${s.mapping.comment ? `<span style="font-weight:normal; color:#888; font-size:12px;"> - ${s.mapping.comment}</span>` : ''}</div>
-              <div class="chc-item-details" title="Selector: ${s.mapping.selector}${s.mapping.text ? `\nText Filter: ${s.mapping.text}` : ''}">
+              <div class="chc-item-label">
+                ${s.mapping.label || s.mapping.key.toUpperCase()}
+                ${s.mapping.comment ? `<span style="font-weight:normal; color:#888; font-size:12px; display:block; margin-top:2px;">${s.mapping.comment}</span>` : ''}
+              </div>
+              <div class="chc-item-details" title="Selector: ${s.mapping.selector}${s.mapping.text ? `\\nText Filter: ${s.mapping.text}` : ''}">
                 ${s.mapping.selector} ${s.mapping.text ? `[Text: ${s.mapping.text}]` : ''}
               </div>
             </div>
@@ -161,6 +210,13 @@
     if (event.altKey && event.shiftKey && event.key === '/') {
       event.preventDefault();
       toggleDashboard();
+      return;
+    }
+
+    // 2. Check for Badge toggle (Alt + Shift + H)
+    if (event.altKey && event.shiftKey && (event.key.toLowerCase() === 'h' || event.code === 'KeyH')) {
+      event.preventDefault();
+      toggleBadge();
       return;
     }
 
