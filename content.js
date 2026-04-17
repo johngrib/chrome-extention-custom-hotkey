@@ -2,17 +2,23 @@
   let activeMappings = [];
   let dashboardOpen = false;
 
-  // Initialize UI elements
+  const isTopFrame = (window === window.top);
+
+  // Initialize UI elements (only in top frame)
   const badge = document.createElement('div');
   badge.className = 'chc-status-badge';
   badge.style.display = 'none';
-  badge.title = 'Click to show Hotkey Dashboard (Alt+Shift+/)';
-  document.body.appendChild(badge);
+  if (isTopFrame) {
+    badge.title = 'Click to show Hotkey Dashboard (Alt+Shift+/)';
+    document.body.appendChild(badge);
+  }
 
   const dashboard = document.createElement('div');
   dashboard.className = 'chc-dashboard hidden';
   dashboard.style.display = 'none';
-  document.body.appendChild(dashboard);
+  if (isTopFrame) {
+    document.body.appendChild(dashboard);
+  }
 
   // Load configuration from storage
   chrome.storage.sync.get('customHotkeyConfig', (data) => {
@@ -109,9 +115,31 @@
       }
     });
 
-    const foundItems = mappingStatus.filter(s => s.found);
-    if (foundItems.length > 0) {
-      badge.innerHTML = foundItems.map(s => {
+    if (!isTopFrame) {
+      // Send found items to top frame
+      const foundItems = mappingStatus.filter(s => s.found).map(s => s.mapping);
+      if (foundItems.length > 0) {
+        window.top.postMessage({ type: 'chc-iframe-status', foundMappings: foundItems }, '*');
+      }
+    } else {
+      updateBadge(mappingStatus);
+      if (dashboardOpen) {
+        updateDashboard(mappingStatus);
+      }
+    }
+  }
+
+  let iframeMappings = []; // Mappings found in iframes
+
+  function updateBadge(mappingStatus) {
+    // Merge iframe found mappings into status
+    const allFound = [
+      ...mappingStatus.filter(s => s.found),
+      ...iframeMappings.map(m => ({ mapping: m, found: true }))
+    ];
+
+    if (allFound.length > 0) {
+      badge.innerHTML = allFound.map(s => {
         const keyStr = (s.mapping.alt ? '⌥' : '') + (s.mapping.shift ? '⇧' : '') + (s.mapping.ctrl ? '⌃' : '') + (s.mapping.meta ? '⌘' : '') + s.mapping.key.toUpperCase();
         return `
           <div class="chc-badge-item">
@@ -121,12 +149,35 @@
         `;
       }).join('');
     } else {
-      badge.textContent = `${foundCount} / ${activeMappings.length}`;
+      badge.textContent = `0 / ${activeMappings.length}`;
     }
-    
-    if (dashboardOpen) {
-      updateDashboard(mappingStatus);
-    }
+  }
+
+  // Listen for iframe mapping status
+  if (isTopFrame) {
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'chc-iframe-status') {
+        iframeMappings = event.data.foundMappings;
+        // Update badge without triggering showHints to avoid loops
+        const topStatus = activeMappings.map(m => {
+          try {
+            const els = document.querySelectorAll(m.selector);
+            const txt = m.text ? m.text.trim().toLowerCase() : '';
+            const found = Array.from(els).some(el => {
+              if (!isVisible(el)) return false;
+              if (txt) {
+                const inner = (el.innerText || '').trim().toLowerCase();
+                const content = (el.textContent || '').trim().toLowerCase();
+                return inner.includes(txt) || content.includes(txt);
+              }
+              return true;
+            });
+            return { mapping: m, found };
+          } catch(e) { return { mapping: m, found: false }; }
+        });
+        updateBadge(topStatus);
+      }
+    });
   }
 
   function isVisible(el) {
